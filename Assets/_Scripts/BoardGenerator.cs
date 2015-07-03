@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 public class BoardGenerator : MonoBehaviour
 {
@@ -16,12 +13,6 @@ public class BoardGenerator : MonoBehaviour
 
     public GameObject Hex;
 
-    private Vector3 _xPos = new Vector3(1,0,-1);
-
-    private Vector3 _yPos = new Vector3(0,1,0);
-    
-    private Vector3 _xPosAdd = new Vector3(0,0,1);
-
     // Use this for initialization
 	void Start () {
         LoadLevel();
@@ -34,35 +25,38 @@ public class BoardGenerator : MonoBehaviour
 
     private void LoadLevel()
     {
+        BigCubesCreator.SetEight();
         for (int x = 0; x < 16; x++)
         {
-              for (int y = 0; y < 16; y++)
-              {
+            for (int y = 0; y < 16; y++)
+            {
                 if (x == 0 || y == 0 || x == 15 || y == 15)
                 {
                     HexController.Hexes[x, y] = 8;
                     continue;
                 }
-                int R = Random.Range(0,6);
-                if(x==1 && y==1)
-                {
-                    R = 6;
-                }
-                if (x==14 && y==14)
-                {
-                    R = 7;
-                }
-                var createObj = Set(R,new Vector3(-y/2 + x, y, x + (y+1)/2));
-                ObjHexes[x, y] = createObj;
-                HexController.Hexes[x,y] = R;
+                int r = Random.Range(0, 6);
+                CreateHex(r, x, y);
             }
         }
+        SetHex(6, 1, 1);
+        HexController.BorderP1[1,1] = 1;
+        SetHex(7,14,14);
+        HexController.BorderP2[14, 14] = 1;
     }
 
-    private GameObject Set(int color, Vector3 vector)
+    private void CreateHex(int color, int x, int y)
     {
-        GameObject createObj = Instantiate(Hex, vector,Quaternion.identity) as GameObject;
-        createObj.GetComponent<Renderer>().material = Materials[color];
-        return createObj;
+        GameObject createObj = Instantiate(Hex, new Vector3(-y / 2 + x, y, x + (y + 1) / 2), Quaternion.identity) as GameObject;
+        ObjHexes[x, y] = createObj;
+        SetHex(color, x, y);
+        BigCubesCreator.BigCubesCreatorColor[-y/2 + x + 6, y, x + (y + 1)/2] = color;
+    }
+
+    public void SetHex(int color, int x, int y)
+    {
+        ObjHexes[x, y].GetComponent<Renderer>().material = Materials[color];
+        HexController.Hexes[x, y] = color;
+        BigCubesCreator.BigCubesCreatorColor[-y / 2 + x + 7, y+1, x + (y + 1) / 2 + 1] = color;
     }
 }
