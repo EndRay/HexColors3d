@@ -43,6 +43,7 @@ public class BoardGenerator : MonoBehaviour
         HexController.BorderP1[1,1] = 1;
         SetHex(7,14,14);
         HexController.BorderP2[14, 14] = 1;
+        BigCubesCreator.CreateBigCube();
     }
 
     private void CreateHex(int color, int x, int y)
@@ -50,13 +51,13 @@ public class BoardGenerator : MonoBehaviour
         GameObject createObj = Instantiate(Hex, new Vector3(-y / 2 + x, y, x + (y + 1) / 2), Quaternion.identity) as GameObject;
         ObjHexes[x, y] = createObj;
         SetHex(color, x, y);
-        BigCubesCreator.BigCubesCreatorColor[-y/2 + x + 6, y, x + (y + 1)/2] = color;
     }
 
     public void SetHex(int color, int x, int y)
     {
         ObjHexes[x, y].GetComponent<Renderer>().material = Materials[color];
         HexController.Hexes[x, y] = color;
-        BigCubesCreator.BigCubesCreatorColor[-y / 2 + x + 7, y+1, x + (y + 1) / 2 + 1] = color;
+        BigCubesCreator.BigCubesCreatorColor[-y / 2 + x + 7, y + 1, x + (y + 1) / 2 + 1] = color;
+        BigCubesCreator.BigCubesCreatorObj[-y / 2 + x + 7, y + 1, x + (y + 1) / 2 + 1] = ObjHexes[x,y];
     }
 }

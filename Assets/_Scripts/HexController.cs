@@ -28,11 +28,24 @@ public class HexController : MonoBehaviour
     
     public bool P1Move;
 
-    public int LastMoveColor;
+    public int LastMoveColor = 6;
+
+    public int PenultimateMoveColor = 6;
+
+    public GameObject[,] DisabledButtons = new GameObject[6, 2];
+
+    public GameObject[] DisabledButtonsP1 = new GameObject[6];
+
+    public GameObject[] DisabledButtonsP2 = new GameObject[6];
 
     // Use this for initialization
     private void Start()
     {
+        for (int c = 0; c < 6; c++)
+        {
+            DisabledButtons[c, 0] = DisabledButtonsP1[c];
+            DisabledButtons[c, 1] = DisabledButtonsP2[c];
+        }
     }
 
     // Update is called once per frame
@@ -54,7 +67,7 @@ public class HexController : MonoBehaviour
             color = -(buttonColor + 1);
             p1Move = false;
         }
-        if (color == LastMoveColor)
+        if (color == LastMoveColor||color == PenultimateMoveColor)
         {
             return;
         }
@@ -62,7 +75,9 @@ public class HexController : MonoBehaviour
         {
             HexSet(color);
             P1Move = !P1Move;
+            PenultimateMoveColor = LastMoveColor;
             LastMoveColor = color;
+            ButtonsActive();
         }        
     }
 
@@ -103,6 +118,7 @@ public class HexController : MonoBehaviour
             SetBorder();
             HexSet(color);
         }
+        BigCubesCreator.CreateBigCube();
     }
 
     private void SetBorder()
@@ -150,5 +166,20 @@ public class HexController : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void ButtonsActive()
+    {
+        for (int c = 0; c < 6; c++)
+        {
+            for (int p = 0; p < 2; p++)
+            {
+                DisabledButtons[c,p].SetActive(false);
+                if ((c == LastMoveColor || c == PenultimateMoveColor) && p == (P1Move ? 0 : 1))
+                {
+                    DisabledButtons[c,p].SetActive(true);
+                }
+            }
+        }
     }
 }
