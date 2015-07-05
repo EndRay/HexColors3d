@@ -15,17 +15,29 @@ public class BoardGenerator : MonoBehaviour
 
     // Use this for initialization
 	void Start () {
-        LoadLevel();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
+	    if (Input.GetButton("R"))
+	    {
+	        LoadLevel();
+	    }
 	
 	}
 
-    private void LoadLevel()
+    public void LoadLevel()
     {
         BigCubesCreator.SetEight();
+        /*Destroy(BigCubesCreator.CreateContainerP1);
+        Destroy(BigCubesCreator.CreateContainerP2);
+        BigCubesCreator.P1ScoreText.SetActive(false);
+        BigCubesCreator.P2ScoreText.SetActive(false);
+        HexController.IsWin = false;
+        HexController.LastMoveColor = 6;
+        HexController.PenultimateMoveColor = 6;
+        HexController.ButtonsActive();*/
         for (int x = 0; x < 16; x++)
         {
             for (int y = 0; y < 16; y++)
@@ -39,11 +51,12 @@ public class BoardGenerator : MonoBehaviour
                 CreateHex(r, x, y);
             }
         }
-        SetHex(6, 1, 1);
-        HexController.BorderP1[1,1] = 1;
-        SetHex(7,14,14);
-        HexController.BorderP2[14, 14] = 1;
+        SetHex(6, 1, 8);
+        HexController.BorderP1[1,8] = 1;
+        SetHex(7,14,7);
+        HexController.BorderP2[14, 7] = 1;
         BigCubesCreator.CreateBigCube();
+        HexController.ButtonsActive();
     }
 
     private void CreateHex(int color, int x, int y)

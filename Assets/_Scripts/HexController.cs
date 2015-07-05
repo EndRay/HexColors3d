@@ -38,6 +38,14 @@ public class HexController : MonoBehaviour
 
     public GameObject[] DisabledButtonsP2 = new GameObject[6];
 
+    public GameObject[,] Buttons = new GameObject[6, 2];
+
+    public GameObject[] ButtonsP1 = new GameObject[6];
+
+    public GameObject[] ButtonsP2 = new GameObject[6];
+
+    public bool IsWin; 
+
     // Use this for initialization
     private void Start()
     {
@@ -46,6 +54,12 @@ public class HexController : MonoBehaviour
             DisabledButtons[c, 0] = DisabledButtonsP1[c];
             DisabledButtons[c, 1] = DisabledButtonsP2[c];
         }
+        for (int c = 0; c < 6; c++)
+        {
+            Buttons[c, 0] = ButtonsP1[c];
+            Buttons[c, 1] = ButtonsP2[c];
+        }
+        BoardGenerator.LoadLevel();
     }
 
     // Update is called once per frame
@@ -119,6 +133,7 @@ public class HexController : MonoBehaviour
             HexSet(color);
         }
         BigCubesCreator.CreateBigCube();
+        IsGameEnd();
     }
 
     private void SetBorder()
@@ -175,11 +190,33 @@ public class HexController : MonoBehaviour
             for (int p = 0; p < 2; p++)
             {
                 DisabledButtons[c,p].SetActive(false);
-                if ((c == LastMoveColor || c == PenultimateMoveColor) && p == (P1Move ? 0 : 1))
+                if ((c == LastMoveColor || c == PenultimateMoveColor) || p != (P1Move ? 0 : 1))
                 {
                     DisabledButtons[c,p].SetActive(true);
                 }
+                if (IsWin)
+                {
+                    DisabledButtons[c,p].SetActive(false);
+                    Buttons[c,p].SetActive(false);
+                }
             }
         }
+    }
+
+    public void IsGameEnd()
+    {
+        for (int x = 1; x < 15; x++)
+        {
+            for (int y = 1; y < 15; y++)
+            {
+                if (Hexes[x, y] != 6 && Hexes[x, y] != 7)
+                {
+                    return;
+                }
+            }
+        }
+        IsWin = true;
+        ButtonsActive();
+        BigCubesCreator.Culculate();
     }
 }

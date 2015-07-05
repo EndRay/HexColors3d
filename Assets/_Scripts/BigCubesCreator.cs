@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 
 public class BigCubesCreator : MonoBehaviour {
 
@@ -8,15 +9,6 @@ public class BigCubesCreator : MonoBehaviour {
         new[]{0,1,1}
     };
 
-    private readonly int[][] _setSides =
-    {
-        new []{0,1,0},
-        new []{-1,0,0},
-        new []{0,0,1},
-        new []{-1,0,1},
-        new []{-1,1,1}
-    };
-
     public HexController HexController;
 
     public BoardGenerator BoardGenerator;
@@ -24,6 +16,20 @@ public class BigCubesCreator : MonoBehaviour {
     public int[,,] BigCubesCreatorColor = new int[23, 18, 24];
 
     public GameObject[,,] BigCubesCreatorObj = new GameObject[23, 18, 24];
+
+    public int P1Score;
+    
+    public int P2Score;
+
+    public GameObject P1ScoreText;
+
+    public GameObject P2ScoreText;
+
+    public GameObject PContainer;
+
+    public GameObject CreateContainerP1;
+
+    public GameObject CreateContainerP2;
 
 	// Use this for initialization
 	void Start () {
@@ -57,16 +63,13 @@ public class BigCubesCreator : MonoBehaviour {
                     }
                     if (isBigCube)
                     {
-                        foreach (var sS in _setSides)
+                        if (!isSet)
                         {
-                            if (!isSet)
-                            {
-                                isSet = SetBigCube(x + sS[0], y + sS[1], z + sS[2], color);
-                            }
-                            else
-                            {
-                                SetBigCube(x + sS[0], y + sS[1], z + sS[2], color);
-                            } 
+                            isSet = SetBigCube(x, y + 1, z, color);
+                        }
+                        else
+                        {
+                            SetBigCube(x, y + 1, z, color);
                         }
                     }
                 }
@@ -87,6 +90,8 @@ public class BigCubesCreator : MonoBehaviour {
                 for (int z = 0; z < 24; z++)
                 {
                     BigCubesCreatorColor[x, y, z] = 8;
+                    Destroy(BigCubesCreatorObj[x, y, z]);   
+                    BigCubesCreatorObj[x, y, z] = null;
                 }
             }
         }
@@ -98,16 +103,78 @@ public class BigCubesCreator : MonoBehaviour {
         {
             return false;
         }
-        if (BigCubesCreatorObj[x, y, z] != null)
+        if (BigCubesCreatorColor[x, y, z] != 8)
         {
-            Destroy(BigCubesCreatorObj[x, y, z]);
-            BigCubesCreatorObj[x, y, z] = null;
-            SetBigCube(x, y, z, color);
+            BigCubesCreatorObj[x, y, z].GetComponent<Renderer>().material = BoardGenerator.Materials[color];
+            BigCubesCreatorColor[x, y, z] = color;
+            return true;
         }
         BigCubesCreatorColor[x, y, z] = color;
         var createObj = Instantiate(BoardGenerator.Hex, new Vector3(x - 7, y - 1, z - 1), Quaternion.identity) as GameObject;
         createObj.GetComponent<Renderer>().material = BoardGenerator.Materials[color];
         BigCubesCreatorObj[x, y, z] = createObj;
         return true;
+    }
+
+    public void Culculate()
+    {
+        P1Score = 0;
+        P2Score = 0;
+        Vector3 centerPosP1 = new Vector3();
+        Vector3 centerPosP2 = new Vector3();
+        for (int x = 0; x < 23; x++)
+        {
+            for (int y = 0; y < 18; y++)
+            {
+                for (int z = 0; z < 24; z++)
+                {
+                    if (BigCubesCreatorColor[x,y,z] == 6)
+                    {
+                        P1Score++;
+                        centerPosP1 += BigCubesCreatorObj[x, y, z].transform.position;
+                    }
+                    if (BigCubesCreatorColor[x,y,z] == 7)
+                    {
+                        P2Score++; 
+                        centerPosP2 += BigCubesCreatorObj[x, y, z].transform.position;
+                    }
+                }   
+            }
+        }
+        P1ScoreText.SetActive(true);
+        P1ScoreText.GetComponent<TextMesh>().text = P1Score.ToString();
+        P2ScoreText.SetActive(true);
+        P2ScoreText.GetComponent<TextMesh>().text = P2Score.ToString();
+        centerPosP1 /= P1Score;
+        centerPosP2 /= P2Score;
+        CreateContainerP1 = Instantiate(PContainer, centerPosP1, Quaternion.identity) as GameObject;
+        CreateContainerP1.name = "P1Container";
+        CreateContainerP2 = Instantiate(PContainer, centerPosP2, Quaternion.identity) as GameObject;
+        CreateContainerP2.name = "P2Container";
+        for (int x = 0; x < 23; x++)
+        {
+            for (int y = 0; y < 18; y++)
+            {
+                for (int z = 0; z < 24; z++)
+                {
+                    if (BigCubesCreatorColor[x, y, z] == 6)
+                    {
+                        BigCubesCreatorObj[x, y, z].transform.SetParent(CreateContainerP1.transform);
+                    }
+                    if (BigCubesCreatorColor[x, y, z] == 7)
+                    {
+                        BigCubesCreatorObj[x, y, z].transform.SetParent(CreateContainerP2.transform);
+                    }
+                }
+            }
+        }
+        CreateContainerP1.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
+        CreateContainerP1.transform.DORotate(new Vector3(40, 30, 20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
+        CreateContainerP1.transform.DOMove(new Vector3(2, 9, 4.5f), 2);
+        P1ScoreText.transform.position = new Vector3(2, 9, 4.5f);
+        CreateContainerP2.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
+        CreateContainerP2.transform.DORotate(new Vector3(-40, -30, -20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
+        CreateContainerP2.transform.DOMove(new Vector3(10, 5.5f, 15), 2);
+        P2ScoreText.transform.position = new Vector3(10, 5.5f, 15);
     }
 }
