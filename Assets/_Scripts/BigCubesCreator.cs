@@ -1,4 +1,6 @@
-﻿using DG.Tweening;
+﻿using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class BigCubesCreator : MonoBehaviour {
@@ -30,6 +32,10 @@ public class BigCubesCreator : MonoBehaviour {
     public GameObject CreateContainerP1;
 
     public GameObject CreateContainerP2;
+
+    public Tween RotatorP1;
+
+    public Tween RotatorP2;
 
 	// Use this for initialization
 	void Start () {
@@ -90,7 +96,6 @@ public class BigCubesCreator : MonoBehaviour {
                 for (int z = 0; z < 24; z++)
                 {
                     BigCubesCreatorColor[x, y, z] = 8;
-                    Destroy(BigCubesCreatorObj[x, y, z]);   
                     BigCubesCreatorObj[x, y, z] = null;
                 }
             }
@@ -111,6 +116,7 @@ public class BigCubesCreator : MonoBehaviour {
         }
         BigCubesCreatorColor[x, y, z] = color;
         var createObj = Instantiate(BoardGenerator.Hex, new Vector3(x - 7, y - 1, z - 1), Quaternion.identity) as GameObject;
+        createObj.transform.DOScale(new Vector3(0, 0, 0), 0.5f).From(); 
         createObj.GetComponent<Renderer>().material = BoardGenerator.Materials[color];
         BigCubesCreatorObj[x, y, z] = createObj;
         return true;
@@ -169,11 +175,11 @@ public class BigCubesCreator : MonoBehaviour {
             }
         }
         CreateContainerP1.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
-        CreateContainerP1.transform.DORotate(new Vector3(40, 30, 20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
+        RotatorP1 = CreateContainerP1.transform.DORotate(new Vector3(40, 30, 20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
         CreateContainerP1.transform.DOMove(new Vector3(2, 9, 4.5f), 2);
         P1ScoreText.transform.position = new Vector3(2, 9, 4.5f);
         CreateContainerP2.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
-        CreateContainerP2.transform.DORotate(new Vector3(-40, -30, -20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
+        RotatorP2 = CreateContainerP2.transform.DORotate(new Vector3(-40, -30, -20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
         CreateContainerP2.transform.DOMove(new Vector3(10, 5.5f, 15), 2);
         P2ScoreText.transform.position = new Vector3(10, 5.5f, 15);
     }

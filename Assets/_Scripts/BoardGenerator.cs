@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 
 public class BoardGenerator : MonoBehaviour
 {
@@ -20,9 +21,9 @@ public class BoardGenerator : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	    if (Input.GetButton("R"))
+	    if (HexController.IsWin && Input.GetButtonDown("R"))
 	    {
-	        LoadLevel();
+	        DestroyLevel();
 	    }
 	
 	}
@@ -30,14 +31,10 @@ public class BoardGenerator : MonoBehaviour
     public void LoadLevel()
     {
         BigCubesCreator.SetEight();
-        /*Destroy(BigCubesCreator.CreateContainerP1);
-        Destroy(BigCubesCreator.CreateContainerP2);
-        BigCubesCreator.P1ScoreText.SetActive(false);
-        BigCubesCreator.P2ScoreText.SetActive(false);
-        HexController.IsWin = false;
         HexController.LastMoveColor = 6;
         HexController.PenultimateMoveColor = 6;
-        HexController.ButtonsActive();*/
+        HexController.IsWin = false;
+        HexController.ButtonsActive();
         for (int x = 0; x < 16; x++)
         {
             for (int y = 0; y < 16; y++)
@@ -51,10 +48,10 @@ public class BoardGenerator : MonoBehaviour
                 CreateHex(r, x, y);
             }
         }
-        SetHex(6, 1, 8);
-        HexController.BorderP1[1,8] = 1;
-        SetHex(7,14,7);
-        HexController.BorderP2[14, 7] = 1;
+        SetHex(6, 1, 7);
+        HexController.BorderP1[1,7] = 1;
+        SetHex(7,14,8);
+        HexController.BorderP2[14, 8] = 1;
         BigCubesCreator.CreateBigCube();
         HexController.ButtonsActive();
     }
@@ -72,5 +69,29 @@ public class BoardGenerator : MonoBehaviour
         HexController.Hexes[x, y] = color;
         BigCubesCreator.BigCubesCreatorColor[-y / 2 + x + 7, y + 1, x + (y + 1) / 2 + 1] = color;
         BigCubesCreator.BigCubesCreatorObj[-y / 2 + x + 7, y + 1, x + (y + 1) / 2 + 1] = ObjHexes[x,y];
+    }
+
+    public void DestroyLevel()
+    {
+        if (HexController.IsWin)
+        {
+            BigCubesCreator.P1ScoreText.SetActive(false);
+            BigCubesCreator.P2ScoreText.SetActive(false);
+            BigCubesCreator.RotatorP1.Kill();
+            BigCubesCreator.RotatorP2.Kill();
+            foreach (Transform cube in BigCubesCreator.CreateContainerP1.transform)
+            {
+                cube.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                cube.gameObject.layer = 8;
+            }
+            foreach (Transform cube in BigCubesCreator.CreateContainerP2.transform)
+            {
+                cube.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                cube.gameObject.layer = 8;
+            }
+        }
+        Destroy(BigCubesCreator.CreateContainerP1, 5);
+        Destroy(BigCubesCreator.CreateContainerP2, 5);
+        Invoke("LoadLevel",5);
     }
 }
