@@ -176,11 +176,11 @@ public class BigCubesCreator : MonoBehaviour {
         }
         CreateContainerP1.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
         RotatorP1 = CreateContainerP1.transform.DORotate(new Vector3(40, 30, 20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
-        CreateContainerP1.transform.DOMove(new Vector3(2, 9, 4.5f), 2);
+        CreateContainerP1.transform.DOMove(new Vector3(2, 15, 4.5f), 2);
         P1ScoreText.transform.position = new Vector3(2, 9, 4.5f);
         CreateContainerP2.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 6).SetEase(Ease.OutElastic);
         RotatorP2 = CreateContainerP2.transform.DORotate(new Vector3(-40, -30, -20), 3, RotateMode.FastBeyond360).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
-        CreateContainerP2.transform.DOMove(new Vector3(10, 5.5f, 15), 2);
+        CreateContainerP2.transform.DOMove(new Vector3(10, 11.5f, 15), 2);
         P2ScoreText.transform.position = new Vector3(10, 5.5f, 15);
     }
 }

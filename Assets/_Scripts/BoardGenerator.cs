@@ -79,6 +79,15 @@ public class BoardGenerator : MonoBehaviour
             BigCubesCreator.P2ScoreText.SetActive(false);
             BigCubesCreator.RotatorP1.Kill();
             BigCubesCreator.RotatorP2.Kill();
+            HexController.P1Move = true;
+            for (int x = 0; x < 16; x++)
+            {
+                for (int y = 0; y < 16; y++)
+                {
+                    HexController.BorderP1[x, y] = 0;
+                    HexController.BorderP2[x, y] = 0;
+                }
+            }
             foreach (Transform cube in BigCubesCreator.CreateContainerP1.transform)
             {
                 cube.gameObject.GetComponent<Rigidbody>().isKinematic = false;
