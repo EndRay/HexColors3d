@@ -33,7 +33,6 @@ public class BoardGenerator : MonoBehaviour
         BigCubesCreator.SetEight();
         HexController.LastMoveColor = 6;
         HexController.PenultimateMoveColor = 6;
-        HexController.IsWin = false;
         HexController.ButtonsActive();
         for (int x = 0; x < 16; x++)
         {
@@ -75,6 +74,7 @@ public class BoardGenerator : MonoBehaviour
     {
         if (HexController.IsWin)
         {
+            HexController.IsWin = false;
             BigCubesCreator.P1ScoreText.SetActive(false);
             BigCubesCreator.P2ScoreText.SetActive(false);
             BigCubesCreator.RotatorP1.Kill();
